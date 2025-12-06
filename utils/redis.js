@@ -64,12 +64,15 @@ const setCache = async (key, data, expirationInSeconds = 300) => {
  * Delete data from Redis cache
  */
 const deleteCache = async (key) => {
-    if (!redisClient) return;
+    if (!redisClient || redisClient.status !== "ready") {
+        console.log("Redis not ready, skip delete:", key);
+        return;
+    }
 
     try {
         await redisClient.del(key);
     } catch (error) {
-        console.error('Redis delete error:', error);
+        console.error("Redis delete error:", error.message);
     }
 };
 
